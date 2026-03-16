@@ -31,3 +31,7 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -input=false -var="key_name=devops-keypair" -var="my_ip=100.30.235.185/32"
         working-directory: terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var="key_name=devops-keypair" -var="my_ip=100.30.235.185/32"
+        working-directory: terraform
