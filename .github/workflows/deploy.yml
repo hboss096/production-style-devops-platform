@@ -29,5 +29,5 @@ jobs:
         working-directory: terraform
  
       - name: Terraform Plan
-        run: terraform plan -var="key_name=devops-keypair"
+        run: terraform plan -input=false -var="key_name=devops-keypair" -var="my_ip=100.30.235.185/32"
         working-directory: terraform
