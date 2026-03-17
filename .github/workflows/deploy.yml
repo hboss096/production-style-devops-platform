@@ -41,7 +41,7 @@ jobs:
         working-directory: terraform/environments/dev
         run: terraform plan -input=false -var-file="terraform.tfvars"
 
-apply:
+  apply:
     needs: terraform
     runs-on: ubuntu-latest
 
