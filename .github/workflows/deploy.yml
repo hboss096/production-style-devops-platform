@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: true
+
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -34,8 +39,8 @@ jobs:
 
       - name: Terraform Plan
         working-directory: terraform/environments/dev
-        run: terraform plan -input=false
+        run: terraform plan -input=false -var-file="terraform.tfvars"
 
       - name: Terraform Apply
         working-directory: terraform/environments/dev
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -input=false -var-file="terraform.tfvars"
