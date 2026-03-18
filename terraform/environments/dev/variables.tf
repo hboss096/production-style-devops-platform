@@ -31,3 +31,7 @@ variable "my_ip" {
   description = "IP allowed for SSH"
   type        = string
 }
+
+variable "ami_id" {
+  type = string
+}

@@ -18,6 +18,16 @@ variable "vpc_id" {
   type = string
 }
 
-variable "subnet_id" {
+variable "ami_id" {
   type = string
+}
+
+variable "subnet_ids" {
+  description = "List of subnet IDs for ASG"
+  type        = list(string)
+}
+
+variable "target_group_arn" {
+  description = "ALB target group ARN"
+  type        = string
 }

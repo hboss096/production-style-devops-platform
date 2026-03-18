@@ -27,26 +27,3 @@ resource "aws_security_group" "web_sg" {
   }
 }
 
-resource "aws_instance" "web" {
-  ami           = "ami-02dfbd4ff395f2a1b"
-  instance_type = var.instance_type
-  subnet_id     = var.subnet_id
-  key_name      = var.key_name
-
-  vpc_security_group_ids = [
-    aws_security_group.web_sg.id
-  ]
-
-  user_data = <<-EOF
-#!/bin/bash
-sudo yum update -y
-sudo yum install nginx -y
-sudo systemctl start nginx
-sudo systemctl enable nginx
-echo "DevOps Platform Running" > /usr/share/nginx/html/index.html
-EOF
-
-  tags = {
-    Name = "${var.project_name}-web"
-  }
-}

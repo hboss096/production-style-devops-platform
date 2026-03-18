@@ -1,4 +1,3 @@
-# ALB Security Group
 resource "aws_security_group" "alb_sg" {
   name   = "${var.project_name}-alb-sg"
   vpc_id = var.vpc_id
@@ -36,7 +35,7 @@ resource "aws_lb" "app_lb" {
   }
 }
 
-# Target Group
+# Target Group (VERY IMPORTANT)
 resource "aws_lb_target_group" "web_tg" {
   name     = "${var.project_name}-tg"
   port     = 80
@@ -44,15 +43,12 @@ resource "aws_lb_target_group" "web_tg" {
   vpc_id   = var.vpc_id
 
   health_check {
-    path = "/"
+    path                = "/"
+    protocol            = "HTTP"
+    interval            = 30
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
   }
-}
-
-# Attach EC2 to Target Group
-resource "aws_lb_target_group_attachment" "web_attach" {
-  target_group_arn = aws_lb_target_group.web_tg.arn
-  target_id        = var.instance_id
-  port             = 80
 }
 
 # Listener

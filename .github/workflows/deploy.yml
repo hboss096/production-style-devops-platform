@@ -9,13 +9,13 @@ concurrency:
   group: terraform-dev
   cancel-in-progress: true
 
-
 jobs:
-  terraform:
+
+  plan:
+    name: Terraform Plan
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -42,14 +42,14 @@ jobs:
         run: terraform plan -input=false -var-file="terraform.tfvars"
 
   apply:
-    needs: terraform
+    name: Terraform Apply
+    needs: plan
     runs-on: ubuntu-latest
 
     environment:
       name: production
 
     steps:
-
       - name: Checkout Code
         uses: actions/checkout@v4
 
