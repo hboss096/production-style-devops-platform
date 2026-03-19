@@ -4,20 +4,31 @@ on:
   push:
     branches:
       - main
+      - dev
 
 concurrency:
-  group: terraform-dev
+  group: terraform-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
 
   plan:
     name: Terraform Plan
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Set Environment Directory
+        id: set-env
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "env_dir=terraform/environments/prod" >> $GITHUB_OUTPUT
+          else
+            echo "env_dir=terraform/environments/dev" >> $GITHUB_OUTPUT
+          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -30,28 +41,34 @@ jobs:
         uses: hashicorp/setup-terraform@v4
 
       - name: Terraform Init
-        working-directory: terraform/environments/dev
+        working-directory: ${{ steps.set-env.outputs.env_dir }}
         run: terraform init
 
       - name: Terraform Validate
-        working-directory: terraform/environments/dev
+        working-directory: ${{ steps.set-env.outputs.env_dir }}
         run: terraform validate
 
       - name: Terraform Plan
-        working-directory: terraform/environments/dev
+        working-directory: ${{ steps.set-env.outputs.env_dir }}
         run: terraform plan -input=false -var-file="terraform.tfvars"
 
   apply:
     name: Terraform Apply
+    if: github.ref == 'refs/heads/main'
     needs: plan
     runs-on: ubuntu-latest
 
     environment:
-      name: production
+      name: production   # 👈 keeps approval required
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Set Environment Directory
+        id: set-env
+        run: |
+          echo "env_dir=terraform/environments/prod" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -64,9 +81,9 @@ jobs:
         uses: hashicorp/setup-terraform@v4
 
       - name: Terraform Init
-        working-directory: terraform/environments/dev
+        working-directory: ${{ steps.set-env.outputs.env_dir }}
         run: terraform init
 
       - name: Terraform Apply
-        working-directory: terraform/environments/dev
+        working-directory: ${{ steps.set-env.outputs.env_dir }}
         run: terraform apply -auto-approve -input=false -var-file="terraform.tfvars"
