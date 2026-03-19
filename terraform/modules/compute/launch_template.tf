@@ -15,7 +15,7 @@ resource "aws_launch_template" "web" {
               yum install nginx -y
               systemctl start nginx
               systemctl enable nginx
-              echo "Version 2 deployed via pipeline 🚀" > /usr/share/nginx/html/index.html
+              echo "Version 2 deployed via pipeline is running" > /usr/share/nginx/html/index.html
               EOF
   )
 }
